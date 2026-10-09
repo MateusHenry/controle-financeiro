@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#5B2C83">
+<title>Controle Financeiro - Mateus</title>
+<style>
+:root{
+  --purple:#5B2C83;--purple2:#45206B;--mid:#7B4BA3;--light:#EDE2F7;
+  --lighter:#F7F2FB;--accent:#DCC7EE;--green:#2e8b57;--red:#b42318;
+  --text:#251b2d;--muted:#766b7d;--white:#fff;--line:#e5dceb;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--lighter);color:var(--text)}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{max-width:900px;margin:auto;min-height:100vh;padding-bottom:30px}
+.top{background:linear-gradient(135deg,var(--purple2),var(--purple));color:#fff;padding:24px 18px 20px;border-radius:0 0 24px 24px;box-shadow:0 4px 18px #45206b30}
+.top h1{margin:0;font-size:22px}.top p{margin:5px 0 18px;opacity:.82;font-size:13px}
+.monthbar{display:flex;gap:8px;align-items:center}.monthbar select{flex:1;border:0;border-radius:12px;padding:12px;background:#ffffff18;color:#fff;outline:none}
+.monthbar option{color:#222;background:#fff}
+.container{padding:16px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:17px;padding:14px;box-shadow:0 2px 9px #45206b0c}
+.card .label{font-size:12px;color:var(--muted);margin-bottom:5px}.card .value{font-size:21px;font-weight:800}.purplecard{background:var(--purple);color:#fff;border-color:var(--purple)}.purplecard .label{color:#eadcf4}
+.progress{height:8px;background:var(--light);border-radius:99px;overflow:hidden;margin-top:10px}.progress span{display:block;height:100%;background:var(--mid);border-radius:99px;width:0}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:20px 2px 9px}.section-title h2{font-size:17px;margin:0}.section-title button{border:0;background:var(--purple);color:#fff;border-radius:10px;padding:9px 12px;font-size:13px;font-weight:700}
+.income{display:flex;gap:8px}.income input{width:100%;padding:11px;border:1px solid var(--line);border-radius:11px;background:#fff}
+.bill{background:#fff;border:1px solid var(--line);border-radius:16px;padding:13px;margin:9px 0;display:flex;gap:11px;align-items:center}
+.bill-main{flex:1;min-width:0}.bill-name{font-weight:750;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.bill-meta{font-size:12px;color:var(--muted);margin-top:4px}.bill-value{font-weight:800;text-align:right;white-space:nowrap}.paid{color:var(--green)}.pending{color:var(--red)}
+.check{width:28px;height:28px;border-radius:9px;border:2px solid #cdbbd9;background:#fff;display:grid;place-items:center;color:#fff;flex:none}.check.on{background:var(--purple);border-color:var(--purple)}
+.actions{display:flex;gap:6px}.iconbtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 9px;color:var(--purple)}
+.empty{text-align:center;padding:28px 12px;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:16px}
+.bottom{position:sticky;bottom:0;background:#ffffffee;backdrop-filter:blur(10px);border-top:1px solid var(--line);display:flex;gap:8px;padding:10px 16px;z-index:5}
+.bottom button{flex:1;border:0;background:transparent;color:var(--muted);padding:8px;border-radius:11px;font-size:12px}.bottom button.active{background:var(--light);color:var(--purple);font-weight:800}
+.page{display:none}.page.active{display:block}
+.modal-bg{position:fixed;inset:0;background:#1e122b88;display:none;align-items:flex-end;justify-content:center;z-index:20}.modal-bg.show{display:flex}
+.modal{background:#fff;width:100%;max-width:650px;border-radius:24px 24px 0 0;padding:20px 17px 28px;max-height:92vh;overflow:auto}.modal h3{margin:0 0 15px;font-size:19px}
+.form{display:grid;gap:10px}.form label{font-size:12px;font-weight:700;color:var(--muted)}.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);border-radius:11px;padding:11px;background:#fff;outline:none}.form textarea{min-height:70px;resize:vertical}.row2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.switchrow{display:flex;justify-content:space-between;align-items:center;padding:10px 0}.switchrow input{width:20px;height:20px;accent-color:var(--purple)}
+.modal-actions{display:flex;gap:8px;margin-top:16px}.modal-actions button{flex:1;padding:12px;border-radius:12px;border:0;font-weight:750}.save{background:var(--purple);color:#fff}.cancel{background:var(--light);color:var(--purple)}
+.settingsbox{background:#fff;border:1px solid var(--line);border-radius:17px;padding:15px;margin-bottom:12px}.settingsbox h3{margin:0 0 9px}.settingsbox button{border:1px solid var(--line);background:#fff;color:var(--purple);padding:10px 12px;border-radius:10px;margin:4px 4px 0 0}
+.legend{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:7px}
+@media(min-width:700px){.top{border-radius:0 0 28px 28px}.modal-bg{align-items:center}.modal{border-radius:22px}.grid{grid-template-columns:repeat(4,1fr)}}
+</style>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Finanças Mateus">
+<meta name="theme-color" content="#5B2C83">
+
+</head>
+<body>
+<div class="app">
+<header class="top">
+  <h1>💜 Controle Financeiro</h1>
+  <p>Seu controle mensal, simples e automático.</p>
+  <div class="monthbar"><select id="month"></select></div>
+</header>
+
+<main class="container">
+  <section id="dashboard" class="page active">
+    <div class="grid">
+      <div class="card"><div class="label">Renda líquida</div><div class="value" id="income">R$ 0,00</div></div>
+      <div class="card"><div class="label">Gastos</div><div class="value" id="expenses">R$ 0,00</div></div>
+      <div class="card purplecard"><div class="label">Saldo</div><div class="value" id="balance">R$ 0,00</div></div>
+      <div class="card"><div class="label">Pendentes</div><div class="value" id="pending">R$ 0,00</div></div>
+    </div>
+    <div class="card">
+      <div class="label">Comprometimento da renda</div>
+      <div class="value" id="percent">0%</div>
+      <div class="progress"><span id="progress"></span></div>
+      <div class="legend"><span id="paidLegend">Pagos: R$ 0,00</span><span id="countLegend">0 contas</span></div>
+    </div>
+
+    <div class="section-title"><h2>Contas do mês</h2><button onclick="openAdd()">＋ Adicionar</button></div>
+    <div id="bills"></div>
+  </section>
+
+  <section id="accounts" class="page">
+    <div class="section-title"><h2>Todas as despesas</h2><button onclick="openAdd()">＋ Nova</button></div>
+    <div id="allBills"></div>
+  </section>
+
+  <section id="settings" class="page">
+    <div class="section-title"><h2>Configurações</h2></div>
+    <div class="settingsbox">
+      <h3>💰 Renda por mês</h3>
+      <p style="font-size:12px;color:#766b7d">Defina sua renda líquida para calcular automaticamente o saldo.</p>
+      <div id="incomeForm"></div>
+    </div>
+    <div class="settingsbox">
+      <h3>💾 Seus dados</h3>
+      <p style="font-size:12px;color:#766b7d">Os dados ficam salvos neste navegador. Faça um backup antes de trocar de aparelho.</p>
+      <button onclick="exportData()">Exportar backup</button>
+      <button onclick="document.getElementById('file').click()">Importar backup</button>
+      <input id="file" type="file" accept=".json" style="display:none" onchange="importData(event)">
+    </div>
+  </section>
+</main>
+
+<nav class="bottom">
+  <button class="active" data-page="dashboard" onclick="showPage('dashboard',this)">🏠<br>Resumo</button>
+  <button data-page="accounts" onclick="showPage('accounts',this)">📋<br>Contas</button>
+  <button data-page="settings" onclick="showPage('settings',this)">⚙️<br>Config.</button>
+</nav>
+</div>
+
+<div class="modal-bg" id="modal">
+<div class="modal">
+<h3 id="modalTitle">Adicionar despesa</h3>
+<form class="form" id="expenseForm">
+<input type="hidden" id="editId">
+<label>Nome da despesa<input id="name" required placeholder="Ex.: Financiamento MRV"></label>
+<div class="row2">
+<label>Categoria<select id="category"><option>Moradia</option><option>Empréstimos</option><option>Educação</option><option>Assinaturas</option><option>Casa</option><option>Transporte</option><option>Outros</option></select></label>
+<label>Dia do vencimento<input id="due" type="number" min="1" max="31" placeholder="Ex.: 10"></label>
+</div>
+<div class="row2">
+<label>Valor padrão (R$)<input id="value" type="number" step="0.01" min="0" required placeholder="0,00"></label>
+<label>Mês específico<select id="specificMonth"><option value="">Todos / recorrente</option></select></label>
+</div>
+<div class="switchrow"><span>Despesa recorrente</span><input id="recurring" type="checkbox"></div>
+<label>Observação<textarea id="notes" placeholder="Opcional"></textarea></label>
+<div class="modal-actions"><button type="button" class="cancel" onclick="closeModal()">Cancelar</button><button class="save">Salvar</button></div>
+</form>
+</div>
+</div>
+
+<script>
+const months=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const key="mateus_financeiro_v1";
+let state=JSON.parse(localStorage.getItem(key)||"null")||{
+  selectedMonth:new Date().getMonth(),
+  income:Array(12).fill(0),
+  expenses:[
+   ["Financiamento MRV","Moradia",true,10,0],
+   ["Registro","Moradia",false,0,0],
+   ["ITBI","Moradia",false,0,0],
+   ["Empréstimo SuperSim","Empréstimos",true,0,0],
+   ["Fase de obras","Moradia",true,0,0],
+   ["Curso TSB","Educação",true,0,0],
+   ["Spotify","Assinaturas",true,0,0],
+   ["Plano telefone","Casa",true,0,0],
+   ["Água","Casa",true,0,0],
+   ["Luz","Casa",true,0,0],
+   ["Internet residencial","Casa",true,0,0],
+   ["Fatura bike elétrica","Transporte",true,0,0],
+   ["Capitalização Caixa","Outros",true,0,0]
+  ].map((x,i)=>({id:Date.now()+i,name:x[0],category:x[1],recurring:x[2],due:x[3],defaultValue:x[4],specificMonth:"",values:{},paid:{},notes:""}))
+};
+function save(){localStorage.setItem(key,JSON.stringify(state))}
+function money(n){return (Number(n)||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"})}
+function month(){return Number(document.getElementById("month").value)}
+function amount(e,m){return e.values[m]!==undefined?Number(e.values[m]):(e.recurring&&!e.specificMonth?Number(e.defaultValue):((e.specificMonth===""||Number(e.specificMonth)===m)?Number(e.defaultValue):0))}
+function isPaid(e,m){return !!e.paid[m]}
+function render(){
+ document.getElementById("month").value=state.selectedMonth;
+ const m=state.selectedMonth, inc=Number(state.income[m])||0;
+ const vals=state.expenses.map(e=>amount(e,m)), total=vals.reduce((a,b)=>a+b,0);
+ const paid=state.expenses.reduce((s,e)=>s+(isPaid(e,m)?amount(e,m):0),0), pending=total-paid;
+ document.getElementById("income").textContent=money(inc);document.getElementById("expenses").textContent=money(total);
+ document.getElementById("balance").textContent=money(inc-total);document.getElementById("pending").textContent=money(pending);
+ const pct=inc?Math.round(total/inc*100):0;document.getElementById("percent").textContent=pct+"%";document.getElementById("progress").style.width=Math.min(pct,100)+"%";
+ document.getElementById("paidLegend").textContent="Pagos: "+money(paid);document.getElementById("countLegend").textContent=vals.filter(v=>v>0).length+" contas";
+ renderBills("bills",state.expenses.filter(e=>amount(e,m)>0),true);
+ renderBills("allBills",state.expenses,true);
+ renderIncome();
+}
+function renderBills(id,list,allowMonth){
+ const el=document.getElementById(id),m=state.selectedMonth;
+ if(!list.length){el.innerHTML='<div class="empty">Nenhuma despesa lançada para este mês.</div>';return}
+ el.innerHTML=list.map(e=>{
+  const v=amount(e,m), p=isPaid(e,m);
+  return `<div class="bill">
+   <button class="check ${p?'on':''}" onclick="togglePaid('${e.id}')" title="Marcar como pago">${p?'✓':''}</button>
+   <div class="bill-main"><div class="bill-name">${esc(e.name)}</div><div class="bill-meta">${esc(e.category)}${e.due?' · vence dia '+e.due:''}${e.recurring?' · recorrente':''}</div></div>
+   <div><div class="bill-value">${money(v)}</div><div class="${p?'paid':'pending'}" style="font-size:11px;text-align:right">${p?'Pago':'Pendente'}</div></div>
+   <div class="actions"><button class="iconbtn" onclick="editExpense('${e.id}')">✎</button><button class="iconbtn" onclick="removeExpense('${e.id}')">×</button></div>
+  </div>`
+ }).join("");
+}
+function renderIncome(){
+ const box=document.getElementById("incomeForm");
+ box.innerHTML=months.map((mo,i)=>`<div style="display:flex;gap:8px;align-items:center;margin:7px 0"><span style="width:95px;font-size:13px">${mo}</span><input type="number" step="0.01" value="${state.income[i]||''}" placeholder="0,00" style="flex:1;padding:10px;border:1px solid var(--line);border-radius:10px" onchange="state.income[${i}]=Number(this.value)||0;save();render()"></div>`).join("");
+}
+function openAdd(){
+ document.getElementById("modalTitle").textContent="Adicionar despesa";document.getElementById("expenseForm").reset();document.getElementById("editId").value="";
+ document.getElementById("specificMonth").value="";document.getElementById("modal").classList.add("show");
+}
+function editExpense(id){
+ const e=state.expenses.find(x=>x.id===id);if(!e)return;
+ document.getElementById("modalTitle").textContent="Editar despesa";document.getElementById("editId").value=id;
+ document.getElementById("name").value=e.name;document.getElementById("category").value=e.category;document.getElementById("due").value=e.due||"";
+ document.getElementById("value").value=e.defaultValue||0;document.getElementById("specificMonth").value=e.specificMonth??"";
+ document.getElementById("recurring").checked=e.recurring;document.getElementById("notes").value=e.notes||"";
+ document.getElementById("modal").classList.add("show");
+}
+function closeModal(){document.getElementById("modal").classList.remove("show")}
+document.getElementById("expenseForm").addEventListener("submit",e=>{
+ e.preventDefault();const id=document.getElementById("editId").value;
+ const data={name:document.getElementById("name").value.trim(),category:document.getElementById("category").value,due:Number(document.getElementById("due").value)||0,defaultValue:Number(document.getElementById("value").value)||0,specificMonth:document.getElementById("specificMonth").value,recurring:document.getElementById("recurring").checked,notes:document.getElementById("notes").value};
+ if(id){Object.assign(state.expenses.find(x=>x.id===id),data)}else state.expenses.push({id:String(Date.now()),...data,values:{},paid:{}});
+ save();closeModal();render();
+});
+function togglePaid(id){const e=state.expenses.find(x=>x.id===id),m=state.selectedMonth;e.paid[m]=!e.paid[m];save();render()}
+function removeExpense(id){const e=state.expenses.find(x=>x.id===id);if(e&&confirm("Excluir "+e.name+"?")){state.expenses=state.expenses.filter(x=>x.id!==id);save();render()}}
+function showPage(page,btn){document.querySelectorAll(".page").forEach(x=>x.classList.remove("active"));document.getElementById(page).classList.add("active");document.querySelectorAll(".bottom button").forEach(x=>x.classList.remove("active"));btn.classList.add("active");}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]))}
+function exportData(){const blob=new Blob([JSON.stringify(state,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="backup-financeiro-mateus.json";a.click();URL.revokeObjectURL(a.href)}
+function importData(ev){const f=ev.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.expenses||!d.income)throw Error();state=d;save();render();alert("Backup importado com sucesso!")}catch{alert("Arquivo de backup inválido.")}};r.readAsText(f)}
+document.getElementById("month").innerHTML=months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+document.getElementById("specificMonth").innerHTML='<option value="">Todos / recorrente</option>'+months.map((m,i)=>`<option value="${i}">${m}</option>`).join("");
+document.getElementById("month").addEventListener("change",()=>{state.selectedMonth=month();save();render()});
+render();
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+</script>
+
+</body>
+</html>
